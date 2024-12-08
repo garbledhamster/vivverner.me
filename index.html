@@ -47,6 +47,7 @@
             filter: grayscale(100%);
             mix-blend-mode: multiply;
         }
+
         .scroll-up .text:nth-child(odd) {
             transform: translateX(10%) scale(0.9);
         }
@@ -143,8 +144,8 @@
             padding: 10px;
         }
 
-        /* Tool Card Styles in Sidebar */
-        .tool-card {
+        /* Tool & Link Card Styles in Sidebar */
+        .tool-card, .link-card {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
@@ -154,13 +155,13 @@
             cursor: pointer;
         }
 
-        .tool-card img {
+        .tool-card img, .link-card img {
             width: 24px;
             height: 24px;
             margin-right: 10px;
         }
 
-        .tool-card span {
+        .tool-card span, .link-card span {
             font-size: 14px;
             color: #ffffff;
             text-decoration: underline;
@@ -189,6 +190,8 @@
     <aside id="sidebar-right">
         <h2 class="font-bold text-white mb-4">Right Menu</h2>
         <p class="mb-2">This is your right sidebar. Add any menu items or links here.</p>
+        <!-- Links will be appended here -->
+        <div id="links-container"></div>
     </aside>
 
     <header>
@@ -266,6 +269,7 @@
             .then(data => {
                 const container = document.getElementById('container');
                 const toolsContainer = document.getElementById('tools-container');
+                const linksContainer = document.getElementById('links-container');
 
                 data.forEach(card => {
                     if (card.Type === "Body") {
@@ -291,6 +295,7 @@
                         // Handle Tool Cards (in Left Menu)
                         const toolDiv = document.createElement('div');
                         toolDiv.className = 'tool-card';
+
                         // Construct favicon URL
                         const domainUrl = new URL(card.url);
                         const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${domainUrl.origin}`;
@@ -303,7 +308,6 @@
                         linkText.textContent = card.title || card.url;
 
                         // Tooltip: card.description
-                        // We'll set the 'title' attribute for Tippy to use
                         toolDiv.setAttribute('data-tippy-content', card.description || 'No description');
 
                         toolDiv.appendChild(imgEl);
@@ -315,6 +319,35 @@
                         });
 
                         toolsContainer.appendChild(toolDiv);
+
+                    } else if (card.Type === "Links") {
+                        // Handle Links (in Right Menu)
+                        const linkDiv = document.createElement('div');
+                        linkDiv.className = 'link-card';
+
+                        // Construct favicon URL
+                        const domainUrl = new URL(card.url);
+                        const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${domainUrl.origin}`;
+
+                        const imgEl = document.createElement('img');
+                        imgEl.src = faviconUrl;
+                        imgEl.alt = 'Favicon';
+
+                        const linkText = document.createElement('span');
+                        linkText.textContent = card.title || card.url;
+
+                        // Tooltip: card.description
+                        linkDiv.setAttribute('data-tippy-content', card.description || 'No description');
+
+                        linkDiv.appendChild(imgEl);
+                        linkDiv.appendChild(linkText);
+
+                        // Make the entire link card clickable
+                        linkDiv.addEventListener('click', () => {
+                            window.open(card.url, '_blank');
+                        });
+
+                        linksContainer.appendChild(linkDiv);
                     }
                 });
 
@@ -337,8 +370,8 @@
                     });
                 });
 
-                // Initialize Tippy tooltips for tools
-                tippy('.tool-card', {
+                // Initialize Tippy tooltips for tools and links
+                tippy('.tool-card, .link-card', {
                     theme: 'light',
                     arrow: true,
                     animation: 'scale',

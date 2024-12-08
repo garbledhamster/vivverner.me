@@ -32,27 +32,50 @@
     {
       "title": "NIST National Vulnerability Database",
       "url": "https://nvd.nist.gov/",
-      "Type": "Tool"
+      "Type": "Tool",
+      "description": "Check known vulnerabilities and security advisories."
     },
     {
       "title": "GitHub",
       "url": "https://github.com/",
-      "Type": "Tool"
+      "Type": "Tool",
+      "description": "Explore open-source projects and repositories."
     },
     {
       "title": "Docker Hub",
       "url": "https://hub.docker.com/",
-      "Type": "Tool"
+      "Type": "Tool",
+      "description": "Find and share container images."
     },
     {
       "title": "Postman",
       "url": "https://www.postman.com/",
-      "Type": "Tool"
+      "Type": "Tool",
+      "description": "API development platform."
     },
     {
       "title": "Stack Overflow",
       "url": "https://stackoverflow.com/",
-      "Type": "Tool"
+      "Type": "Tool",
+      "description": "Get help from a massive developer Q&A community."
+    },
+    {
+      "title": "🌎 My Portfolio",
+      "url": "https://example.com/portfolio",
+      "Type": "Links",
+      "description": "Check out projects, case studies, and testimonials."
+    },
+    {
+      "title": "💼 LinkedIn",
+      "url": "https://www.linkedin.com/in/username/",
+      "Type": "Links",
+      "description": "Connect professionally and network with like-minded peers."
+    },
+    {
+      "title": "🎨 Dribbble",
+      "url": "https://dribbble.com/username",
+      "Type": "Links",
+      "description": "Inspiration and showcases of design work."
     }
   ]
   
