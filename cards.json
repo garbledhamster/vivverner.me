@@ -1,0 +1,58 @@
+[
+    {
+      "title": "📨 Contact & Collaboration",
+      "description": "![](https://images.pexels.com/photos/326576/pexels-photo-326576.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)\n\nOpen to new opportunities, projects, and partnerships. Reach out via email or professional networks to discuss potential collaborations, mentorships, or consulting engagements.\n\n- Approachable & friendly\n- Flexible scheduling\n- Genuine interest in mutual growth",
+      "alt_text": "Contact Information",
+      "Type": "Body"
+    },
+    {
+      "title": "🌱 Personal Growth",
+      "description": "![Plant Growth](https://images.pexels.com/photos/1002703/pexels-photo-1002703.jpeg?auto=compress&w=1260)\n\nExploring self-improvement strategies, mental health routines, and productive habits. Emphasis on:\n\n- Mindfulness & meditation\n- Regular exercise\n- Continuous learning\n- Healthy relationships",
+      "alt_text": "A growing plant symbolizing self-improvement",
+      "Type": "Body"
+    },
+    {
+      "title": "💻 System Architecture",
+      "description": "![Data Center](https://images.pexels.com/photos/45413/pexels-photo-45413.jpeg)\n\nDesigning robust architectures:\n\n- Microservices & containerization\n- Cloud-native deployments\n- Scalability & high availability\n- Infrastructure as code",
+      "alt_text": "Servers representing system architecture",
+      "Type": "Body"
+    },
+    {
+      "title": "🌐 Web Development",
+      "description": "![Web Design](https://images.pexels.com/photos/1106468/pexels-photo-1106468.jpeg?auto=compress&w=1260)\n\nFront-end & back-end development leveraging:\n\n- React, Vue, or Svelte for UI\n- Node.js & Express for APIs\n- Responsive & accessible design\n- Modern CSS frameworks (Tailwind, etc.)",
+      "alt_text": "Web development illustration",
+      "Type": "Body"
+    },
+    {
+      "title": "🔒 Security Awareness",
+      "description": "![Cybersecurity](https://images.pexels.com/photos/905163/pexels-photo-905163.jpeg?auto=compress&w=1260)\n\nEnsuring digital safety:\n\n- Regular vulnerability scans\n- Secure coding practices\n- Continuous training & education\n- Compliance with security standards (ISO, NIST)",
+      "alt_text": "Shield symbolizing cybersecurity",
+      "Type": "Body"
+    },
+    {
+      "title": "NIST National Vulnerability Database",
+      "url": "https://nvd.nist.gov/",
+      "Type": "Tool"
+    },
+    {
+      "title": "GitHub",
+      "url": "https://github.com/",
+      "Type": "Tool"
+    },
+    {
+      "title": "Docker Hub",
+      "url": "https://hub.docker.com/",
+      "Type": "Tool"
+    },
+    {
+      "title": "Postman",
+      "url": "https://www.postman.com/",
+      "Type": "Tool"
+    },
+    {
+      "title": "Stack Overflow",
+      "url": "https://stackoverflow.com/",
+      "Type": "Tool"
+    }
+  ]
+  

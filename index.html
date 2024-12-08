@@ -1,1 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viv Verner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Minimal Tooltip Library: Tippy.js -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Nova+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #000066;
+            --secondary-black: #000000;
+            --tertiary-purple: #6a0dad;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #e0ccff; /* Light purple */
+            color: #000000; /* Black */
+            overflow-x: hidden;
+        }
+        h1, h2 {
+            font-family: 'Nova Mono', monospace;
+            text-transform: uppercase;
+        }
+
+        .text {
+            margin: 0 auto 50px; /* center horizontally */
+            max-width: 550px;
+            padding: 20px;
+            border: 4px solid var(--tertiary-purple);
+            background-color: #cc99ff;
+            box-shadow: 10px 10px 0 var(--primary-blue), -10px -10px 0 #3399ff;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+        }
+
+        .text img {
+            max-width: 100%;
+            display: block;
+            filter: grayscale(100%);
+            mix-blend-mode: multiply;
+        }
+        .scroll-up .text:nth-child(odd) {
+            transform: translateX(10%) scale(0.9);
+        }
+        .scroll-up .text:nth-child(even) {
+            transform: translateX(-10%);
+        }
+        .scroll-down .text:nth-child(odd) {
+            transform: translateX(-10%) scale(0.9);
+        }
+        .scroll-down .text:nth-child(even) {
+            transform: translateX(10%);
+        }
+
+        /* Sidebar Styles */
+        #sidebar, #sidebar-right {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background-color: var(--primary-blue);
+            color: white;
+            z-index: 50;
+            padding: 20px;
+            transition: transform 0.3s ease;
+            will-change: transform;
+            overflow-y: auto;
+            border: 4px solid var(--secondary-black);
+        }
+
+        #sidebar {
+            left: 0;
+            transform: translateX(-100%);
+            border-right: none;
+            border-top: none;
+            border-bottom: none;
+            border-left: 4px solid var(--tertiary-purple);
+        }
+
+        #sidebar-right {
+            right: 0;
+            transform: translateX(100%);
+            border-left: none;
+            border-top: none;
+            border-bottom: none;
+            border-right: 4px solid var(--tertiary-purple);
+        }
+
+        #menu-handle, #menu-handle-right {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        #menu-handle {
+            left: 0;
+        }
+
+        #menu-handle-right {
+            right: 0;
+        }
+
+        #menu-handle-button-left, #menu-handle-button-right {
+            pointer-events: auto;
+            cursor: pointer;
+            background-color: var(--primary-blue);
+            color: white;
+            border: 4px solid var(--secondary-black);
+            border-radius: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #menu-handle-button-left:hover, #menu-handle-button-right:hover {
+            background-color: var(--tertiary-purple);
+        }
+
+        header, footer {
+            background-color: var(--primary-blue);
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        main {
+            padding: 10px;
+        }
+
+        /* Tool Card Styles in Sidebar */
+        .tool-card {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background: #6a0dad;
+            padding: 10px;
+            border: 2px solid #000000;
+            cursor: pointer;
+        }
+
+        .tool-card img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .tool-card span {
+            font-size: 14px;
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Menu Handle -->
+    <div id="menu-handle">
+        <button id="menu-handle-button-left" aria-label="Toggle left menu">☰</button>
+    </div>
+    <!-- Right Menu Handle -->
+    <div id="menu-handle-right">
+        <button id="menu-handle-button-right" aria-label="Toggle right menu">☰</button>
+    </div>
+
+    <!-- Left Sidebar -->
+    <aside id="sidebar">
+        <h2 class="font-bold text-white mb-4">Left Menu</h2>
+        <p class="mb-2">This is your left sidebar. Add any menu items or links here.</p>
+        <!-- Tools will be appended here -->
+        <div id="tools-container"></div>
+    </aside>
+
+    <!-- Right Sidebar -->
+    <aside id="sidebar-right">
+        <h2 class="font-bold text-white mb-4">Right Menu</h2>
+        <p class="mb-2">This is your right sidebar. Add any menu items or links here.</p>
+    </aside>
+
+    <header>
+        <h1>Viv</h1>
+    </header>
+
+    <main>
+        <div id="container" class="p-10">
+            <!-- Body cards will be dynamically loaded here from cards.json -->
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024</p>
+    </footer>
+
+    <script>
+        var lastScrollTop = 0;
+        $(window).scroll(function() {
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop) {
+                $('#container').removeClass('scroll-up').addClass('scroll-down');
+            } else {
+                $('#container').removeClass('scroll-down').addClass('scroll-up');
+            }
+            clearTimeout($.data(this, 'scrollTimer'));
+            $.data(this, 'scrollTimer', setTimeout(function() {
+                $('#container').removeClass('scroll-up').removeClass('scroll-down');
+            }, 100));
+            lastScrollTop = st;
+        });
+
+        // Toggle sidebars
+        const sidebar = document.getElementById('sidebar');
+        const sidebarRight = document.getElementById('sidebar-right');
+        const menuHandleButtonLeft = document.getElementById('menu-handle-button-left');
+        const menuHandleButtonRight = document.getElementById('menu-handle-button-right');
+
+        function toggleSidebar() {
+            if (sidebar.style.transform.includes('-100%')) {
+                sidebar.style.transform = 'translateX(0%)';
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+            }
+        }
+
+        function toggleSidebarRight() {
+            if (sidebarRight.style.transform.includes('100%')) {
+                sidebarRight.style.transform = 'translateX(0%)';
+            } else {
+                sidebarRight.style.transform = 'translateX(100%)';
+            }
+        }
+
+        menuHandleButtonLeft.addEventListener('click', toggleSidebar);
+        menuHandleButtonRight.addEventListener('click', toggleSidebarRight);
+
+        document.addEventListener('click', (e) => {
+            const isClickInsideSidebar = sidebar.contains(e.target);
+            const isClickOnLeftToggle = menuHandleButtonLeft.contains(e.target);
+            if (!isClickInsideSidebar && !isClickOnLeftToggle && !sidebar.style.transform.includes('-100%')) {
+                sidebar.style.transform = 'translateX(-100%)';
+            }
+
+            const isClickInsideSidebarRight = sidebarRight.contains(e.target);
+            const isClickOnRightToggle = menuHandleButtonRight.contains(e.target);
+            if (!isClickInsideSidebarRight && !isClickOnRightToggle && !sidebarRight.style.transform.includes('100%')) {
+                sidebarRight.style.transform = 'translateX(100%)';
+            }
+        });
+
+        // Load cards from JSON
+        fetch('cards.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('container');
+                const toolsContainer = document.getElementById('tools-container');
+
+                data.forEach(card => {
+                    if (card.Type === "Body") {
+                        // Handle Body Cards
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'text';
+
+                        if (card.title) {
+                            const titleEl = document.createElement('h2');
+                            titleEl.textContent = card.title;
+                            cardDiv.appendChild(titleEl);
+                        }
+
+                        if (card.description) {
+                            const descEl = document.createElement('div');
+                            const parsedMarkdown = marked.parse(card.description);
+                            descEl.innerHTML = parsedMarkdown;
+                            cardDiv.appendChild(descEl);
+                        }
+                        container.appendChild(cardDiv);
+
+                    } else if (card.Type === "Tool") {
+                        // Handle Tool Cards (in Left Menu)
+                        const toolDiv = document.createElement('div');
+                        toolDiv.className = 'tool-card';
+                        // Construct favicon URL
+                        const domainUrl = new URL(card.url);
+                        const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${domainUrl.origin}`;
+
+                        const imgEl = document.createElement('img');
+                        imgEl.src = faviconUrl;
+                        imgEl.alt = 'Favicon';
+
+                        const linkText = document.createElement('span');
+                        linkText.textContent = card.title || card.url;
+
+                        // Tooltip: card.description
+                        // We'll set the 'title' attribute for Tippy to use
+                        toolDiv.setAttribute('data-tippy-content', card.description || 'No description');
+
+                        toolDiv.appendChild(imgEl);
+                        toolDiv.appendChild(linkText);
+
+                        // Make the entire tool card clickable
+                        toolDiv.addEventListener('click', () => {
+                            window.open(card.url, '_blank');
+                        });
+
+                        toolsContainer.appendChild(toolDiv);
+                    }
+                });
+
+                // Enhance images with figure/figcaption
+                const texts = container.querySelectorAll('.text');
+                texts.forEach(textEl => {
+                    const imgs = textEl.querySelectorAll('img');
+                    imgs.forEach(img => {
+                        img.loading = 'lazy';
+                        const altText = img.alt || '';
+                        const figure = document.createElement('figure');
+                        const figImg = img.cloneNode(true);
+                        figure.appendChild(figImg);
+                        if (altText.trim() !== '') {
+                            const figcaption = document.createElement('figcaption');
+                            figcaption.textContent = altText;
+                            figure.appendChild(figcaption);
+                        }
+                        img.replaceWith(figure);
+                    });
+                });
+
+                // Initialize Tippy tooltips for tools
+                tippy('.tool-card', {
+                    theme: 'light',
+                    arrow: true,
+                    animation: 'scale',
+                    delay: [100, 100]
+                });
+            })
+            .catch(error => {
+                console.error("Error loading cards.json:", error);
+            });
+    </script>
+</body>
+</html>
