@@ -41,7 +41,7 @@
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
         }
 
-        .text img {
+        .text figure img {
             max-width: 100%;
             display: block;
             filter: grayscale(100%);
@@ -62,6 +62,7 @@
         }
 
         /* Sidebar Styles */
+        /* Added tabindex for focus management when opened */
         #sidebar, #sidebar-right {
             position: fixed;
             top: 0;
@@ -75,6 +76,7 @@
             will-change: transform;
             overflow-y: auto;
             border: 4px solid var(--secondary-black);
+            outline: none;
         }
 
         #sidebar {
@@ -166,28 +168,35 @@
             color: #ffffff;
             text-decoration: underline;
         }
+
+        /* Minimal responsive tweak */
+        @media (max-width: 640px) {
+            #sidebar, #sidebar-right {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Left Menu Handle -->
     <div id="menu-handle">
-        <button id="menu-handle-button-left" aria-label="Toggle left menu">☰</button>
+        <button id="menu-handle-button-left" aria-label="Toggle left menu" aria-expanded="false">☰</button>
     </div>
     <!-- Right Menu Handle -->
     <div id="menu-handle-right">
-        <button id="menu-handle-button-right" aria-label="Toggle right menu">☰</button>
+        <button id="menu-handle-button-right" aria-label="Toggle right menu" aria-expanded="false">☰</button>
     </div>
 
-    <!-- Left Sidebar -->
-    <aside id="sidebar">
+    <!-- Left Sidebar (tabindex for focus capture) -->
+    <aside id="sidebar" tabindex="-1">
         <h2 class="font-bold text-white mb-4">Left Menu</h2>
         <p class="mb-2">This is your left sidebar. Add any menu items or links here.</p>
         <!-- Tools will be appended here -->
         <div id="tools-container"></div>
     </aside>
 
-    <!-- Right Sidebar -->
-    <aside id="sidebar-right">
+    <!-- Right Sidebar (tabindex for focus capture) -->
+    <aside id="sidebar-right" tabindex="-1">
         <h2 class="font-bold text-white mb-4">Right Menu</h2>
         <p class="mb-2">This is your right sidebar. Add any menu items or links here.</p>
         <!-- Links will be appended here -->
@@ -209,22 +218,30 @@
     </footer>
 
     <script>
-        var lastScrollTop = 0;
-        $(window).scroll(function() {
-            var st = window.pageYOffset || document.documentElement.scrollTop;
-            if (st > lastScrollTop) {
-                $('#container').removeClass('scroll-up').addClass('scroll-down');
-            } else {
-                $('#container').removeClass('scroll-down').addClass('scroll-up');
+        // For scroll direction detection (throttled)
+        let lastScrollTop = 0;
+        let scrollTimer = null;
+        $(window).on('scroll', function() {
+            // Only set direction on first scroll event in any batch
+            if (!scrollTimer) {
+                let st = window.pageYOffset || document.documentElement.scrollTop;
+                if (st > lastScrollTop) {
+                    $('#container').removeClass('scroll-up').addClass('scroll-down');
+                } else {
+                    $('#container').removeClass('scroll-down').addClass('scroll-up');
+                }
+                lastScrollTop = st;
             }
-            clearTimeout($.data(this, 'scrollTimer'));
-            $.data(this, 'scrollTimer', setTimeout(function() {
-                $('#container').removeClass('scroll-up').removeClass('scroll-down');
-            }, 100));
-            lastScrollTop = st;
+            // Clear any existing timer
+            clearTimeout(scrollTimer);
+            // Remove direction classes when scrolling stops
+            scrollTimer = setTimeout(function() {
+                $('#container').removeClass('scroll-up scroll-down');
+                scrollTimer = null;
+            }, 100);
         });
 
-        // Toggle sidebars
+        // Toggle sidebars with aria-expanded and focus
         const sidebar = document.getElementById('sidebar');
         const sidebarRight = document.getElementById('sidebar-right');
         const menuHandleButtonLeft = document.getElementById('menu-handle-button-left');
@@ -233,16 +250,26 @@
         function toggleSidebar() {
             if (sidebar.style.transform.includes('-100%')) {
                 sidebar.style.transform = 'translateX(0%)';
+                menuHandleButtonLeft.textContent = 'Close';
+                menuHandleButtonLeft.setAttribute('aria-expanded', 'true');
+                sidebar.focus(); // move focus into sidebar
             } else {
                 sidebar.style.transform = 'translateX(-100%)';
+                menuHandleButtonLeft.textContent = '☰';
+                menuHandleButtonLeft.setAttribute('aria-expanded', 'false');
             }
         }
 
         function toggleSidebarRight() {
             if (sidebarRight.style.transform.includes('100%')) {
                 sidebarRight.style.transform = 'translateX(0%)';
+                menuHandleButtonRight.textContent = 'Close';
+                menuHandleButtonRight.setAttribute('aria-expanded', 'true');
+                sidebarRight.focus(); // move focus into sidebar
             } else {
                 sidebarRight.style.transform = 'translateX(100%)';
+                menuHandleButtonRight.textContent = '☰';
+                menuHandleButtonRight.setAttribute('aria-expanded', 'false');
             }
         }
 
@@ -254,18 +281,27 @@
             const isClickOnLeftToggle = menuHandleButtonLeft.contains(e.target);
             if (!isClickInsideSidebar && !isClickOnLeftToggle && !sidebar.style.transform.includes('-100%')) {
                 sidebar.style.transform = 'translateX(-100%)';
+                menuHandleButtonLeft.textContent = '☰';
+                menuHandleButtonLeft.setAttribute('aria-expanded', 'false');
             }
 
             const isClickInsideSidebarRight = sidebarRight.contains(e.target);
             const isClickOnRightToggle = menuHandleButtonRight.contains(e.target);
             if (!isClickInsideSidebarRight && !isClickOnRightToggle && !sidebarRight.style.transform.includes('100%')) {
                 sidebarRight.style.transform = 'translateX(100%)';
+                menuHandleButtonRight.textContent = '☰';
+                menuHandleButtonRight.setAttribute('aria-expanded', 'false');
             }
         });
 
-        // Load cards from JSON
+        // Fetch cards with error handling
         fetch('cards.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 const container = document.getElementById('container');
                 const toolsContainer = document.getElementById('tools-container');
@@ -289,6 +325,7 @@
                             descEl.innerHTML = parsedMarkdown;
                             cardDiv.appendChild(descEl);
                         }
+
                         container.appendChild(cardDiv);
 
                     } else if (card.Type === "Tool") {
@@ -301,7 +338,7 @@
                         const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${domainUrl.origin}`;
 
                         const imgEl = document.createElement('img');
-                        imgEl.src = faviconUrl;
+                        imgEl.dataset.src = faviconUrl; // use data-src for lazy loading
                         imgEl.alt = 'Favicon';
 
                         const linkText = document.createElement('span');
@@ -330,7 +367,7 @@
                         const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${domainUrl.origin}`;
 
                         const imgEl = document.createElement('img');
-                        imgEl.src = faviconUrl;
+                        imgEl.dataset.src = faviconUrl; // use data-src for lazy loading
                         imgEl.alt = 'Favicon';
 
                         const linkText = document.createElement('span');
@@ -351,16 +388,27 @@
                     }
                 });
 
-                // Enhance images with figure/figcaption
+                // Enhance images with figure/figcaption and also prepare them for IntersectionObserver
                 const texts = container.querySelectorAll('.text');
                 texts.forEach(textEl => {
                     const imgs = textEl.querySelectorAll('img');
                     imgs.forEach(img => {
+                        // Ensure lazy loading attribute
                         img.loading = 'lazy';
+
+                        // Wrap image in figure/figcaption
                         const altText = img.alt || '';
                         const figure = document.createElement('figure');
                         const figImg = img.cloneNode(true);
+
+                        // Switch the real src to data-src (for IntersectionObserver)
+                        if (figImg.src) {
+                            figImg.dataset.src = figImg.src;
+                            figImg.removeAttribute('src');
+                        }
+
                         figure.appendChild(figImg);
+
                         if (altText.trim() !== '') {
                             const figcaption = document.createElement('figcaption');
                             figcaption.textContent = altText;
@@ -370,16 +418,36 @@
                     });
                 });
 
-                // Initialize Tippy tooltips for tools and links
+                // Initialize Tippy tooltips for tools and links, with improved aria
                 tippy('.tool-card, .link-card', {
                     theme: 'light',
                     arrow: true,
                     animation: 'scale',
-                    delay: [100, 100]
+                    delay: [100, 100],
+                    aria: {
+                        content: 'auto'
+                    }
+                });
+
+                // IntersectionObserver to load images when in view
+                const lazyImages = document.querySelectorAll('img[data-src]');
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.removeAttribute('data-src');
+                            observer.unobserve(lazyImage);
+                        }
+                    });
+                });
+                lazyImages.forEach(img => {
+                    imageObserver.observe(img);
                 });
             })
             .catch(error => {
                 console.error("Error loading cards.json:", error);
+                // Optional: display a fallback message to the user
             });
     </script>
 </body>
